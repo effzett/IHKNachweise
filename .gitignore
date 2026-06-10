@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtuelle Umgebung
+.venv/
+
+# PyInstaller-Build-Artefakte
+build/
+dist/
+*.spec.bak
+
+# Betriebssystem
+.DS_Store
+
+# Laufzeit-Ausgaben (lokale Tests)
+/Ausbildungsnachweise/
+/test_output/
+
+# Lokal heruntergeladene Modelle (portable Installation / Tests)
+/models/

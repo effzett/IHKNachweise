@@ -1,0 +1,69 @@
+# Release-Build für IHK-Ausbildungsnachweise.
+#
+# GERÜST – bewusst noch zurückhaltend gehalten (siehe Aufgabenstellung:
+# "Später ... soll die Entwicklung über GitHub Action erfolgen").
+# Ausgelöst wird der Build, wenn auf dem master-Zweig ein Tag (v*) gepusht wird.
+#
+# Zielplattformen:
+#   - macOS / Apple Silicon  -> .dmg   (Runner: macos-14)
+#   - Windows 11 / Intel     -> .exe   (Runner: windows-latest)
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write   # für das Anhängen der Artefakte an den Release
+
+jobs:
+  build:
+    name: Build ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            label: macOS-AppleSilicon
+            artifact: dist/IHKNachweise.dmg
+          - os: windows-latest
+            label: Windows11-Intel
+            artifact: dist/IHKNachweise/**
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Abhängigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          PYTHON=python PYINSTALLER=pyinstaller bash packaging/build_macos.sh
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller packaging/IHKNachweise.spec --noconfirm
+
+      - name: Artefakt hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: IHKNachweise-${{ matrix.label }}
+          path: ${{ matrix.artifact }}
+
+      - name: An Release anhängen
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}

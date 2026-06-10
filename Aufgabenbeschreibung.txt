@@ -1,0 +1,35 @@
+Ich habe dir ein Verzeichnis zugewiesen, dass gleichzeitig das Projektverzeichnis in PyCharm ist.
+Es ist dort als Interpreter Python 3.12 gewählt und das venv Environment eingetragen. Alle zusätzlichen Frameworks bitte in das virtuelle venv-Environment vornehmen.
+Es ist ein .git Repositoriy angelegt, das du benutzen kannst.
+
+Später (aber noch nicht jetzt) soll die Entwicklung über Github action erfolgen und zwar für macos/silicon und Win11/intel. Getriggert werden soll die Release-Erzeugung auf dem master-Zweig wenn dem Commit ein Tag hinzugefügt wurde. Du kannst die Ordner aber schon einrichten.
+
+Aufgabe:
+Es soll eine Desktop-Anwendung erstellt werden (bei macos:.dmg, bei Win11:.exe)
+die alleine lauffähig ist und alle nötigen Bibliotheken enthält.
+
+Die Azubis müssen Ausbildungsnachweise führen (für Fachinformatiker wochenweise).
+Das Programm soll mit pyside6  (und ggfs mit dem installer-Paket) erfolgen.
+Ausgabe sollen PDF-Dokumente sein,  die wochenweise erstellt werden.
+
+Das Programm ist in 2 Bereiche aufgeteilt:
+links ist ein Fenster, in dem der Azubi seine Stichworte einträgt. Es soll ein Button "Erzeuge" vorhanden sein der das PDF erzeugt und in der rechten Hälfte strukturiert und kategorisiert (mit der geladenen LLM) schön darstellt. Ggfs. mit Abschnitten und Themenüberschriften.
+
+Das rechte Fenster zeigt also nur das erzeugte PDF an.
+In das linke Fenster muss der Azubi seine Themen und Tätigkeiten eintragen.
+
+Falls ein Arbeitsbereichswechsel innerhalb der KW stattfindet, muss der Azubi dafür separate Nachweise erzeugen. Der Zeitraum muss daher nicht zwangsläufig oben die komplette KW abdecken, sondern kann auch überschrieben/angepasst werden.
+
+In einem oberen Bereich sollen die Meta-Daten stehen (Name, Zeit (KW und Default-Datumsbereich), Auswahl einer lokalen LLM (evtl mit annähernder Größe;muss dann beim ersten mal gedownloaded werden)). Ebenfalls sollen da auch Arbeitsbereiche und Betreuer per editierbare Drop-Downs auswählbar sein.
+Auch Pfade (wo sollen die PDF gespeichert werden) und Benamung der PDF-Dateien (Name+KW+Zeitbereich) sollten konfigurierbar sein.
+Diese Metadaten müssen in einer Art Konfigurationsdatei gespeichert werden.
+Zu den PDF Ergebnisdateien sollten auch die Rohdaten als .txt Dateien abgespeichert werden. Es sollte später möglich sein, diese Rohdaten auch später wieder einzulesen und eine neue PDF zu erzeugen.
+Die PDFs müssen den Namen der LLM und die Erzeugungdaten/Datum (PDF und Rohdaten) irgendwo anzeigen.
+
+Bis auf die Metadaten (die gelesen/geschrieben/gelöscht und verändert werden können und die geladenen Rohdaten muss es also nur load/edit/shoot machen).
+
+Falls die LLM keine befriedigende Lösung generiert hat, muss eine Neugenerierung erzwungen werden können, die das alte Ergebnis überschreibt.
+ 
+
+
+

@@ -1,0 +1,11 @@
+# Laufzeit-Abhängigkeiten der IHK-Ausbildungsnachweise-App
+# Installation: .venv/bin/pip install -r requirements.txt
+
+PySide6>=6.11,<7            # GUI inkl. QtPdf/QtPdfWidgets (Essentials + Addons)
+llama-cpp-python>=0.3.0     # Lokale LLM-Inferenz (GGUF); Metal auf macOS, CPU auf Win
+reportlab>=4.2              # PDF-Erzeugung
+huggingface-hub>=0.24       # Modell-Download von Hugging Face
+requests>=2.32              # Streaming-Download der GGUF-Dateien
+
+# Nur für das Erstellen der Distributionspakete (siehe packaging/):
+# pyinstaller>=6.6
