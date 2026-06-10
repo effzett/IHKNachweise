@@ -11,11 +11,17 @@ Skripte (build_macos.sh / build_windows.bat) verpacken das Ergebnis als
 .dmg bzw. .exe-Installer.
 """
 
+import os
 import sys
 
 from PyInstaller.utils.hooks import collect_dynamic_libs, collect_submodules
 
 block_cipher = None
+
+# Pfade robust relativ zur Spec-Datei auflösen (SPECPATH wird von PyInstaller
+# in den Namensraum injiziert). So funktioniert der Build unabhängig davon, aus
+# welchem Verzeichnis pyinstaller aufgerufen wird.
+PROJECT_ROOT = os.path.abspath(os.path.join(SPECPATH, os.pardir))
 
 # llama-cpp-python liefert eine native Shared Library mit, die mitgenommen
 # werden muss, sonst startet die LLM-Komponente im Paket nicht.
@@ -23,8 +29,8 @@ binaries = collect_dynamic_libs("llama_cpp")
 hiddenimports = collect_submodules("llama_cpp")
 
 a = Analysis(
-    ["../main.py"],
-    pathex=["."],
+    [os.path.join(PROJECT_ROOT, "main.py")],
+    pathex=[PROJECT_ROOT],
     binaries=binaries,
     datas=[],
     hiddenimports=hiddenimports,

@@ -1,12 +1,12 @@
 # Release-Build für IHK-Ausbildungsnachweise.
 #
-# GERÜST – bewusst noch zurückhaltend gehalten (siehe Aufgabenstellung:
-# "Später ... soll die Entwicklung über GitHub Action erfolgen").
-# Ausgelöst wird der Build, wenn auf dem master-Zweig ein Tag (v*) gepusht wird.
+# Ausgelöst, wenn ein Tag (v*) gepusht wird. Baut eigenständige Pakete für
+# beide Zielplattformen und hängt sie an den zugehörigen GitHub-Release an:
+#   - macOS / Apple Silicon  -> IHKNachweise.dmg            (Runner: macos-14)
+#   - Windows 11 / Intel     -> IHKNachweise-Windows.zip    (Runner: windows-latest)
 #
-# Zielplattformen:
-#   - macOS / Apple Silicon  -> .dmg   (Runner: macos-14)
-#   - Windows 11 / Intel     -> .exe   (Runner: windows-latest)
+# Hinweis: Das Modell (GGUF) wird NICHT mitgepackt; es wird erst zur Laufzeit
+# beim ersten Verwenden heruntergeladen.
 
 name: Release
 
@@ -14,9 +14,11 @@ on:
   push:
     tags:
       - "v*"
+  # Manuelles Auslösen zum Testen des Workflows (ohne Release-Anhang).
+  workflow_dispatch:
 
 permissions:
-  contents: write   # für das Anhängen der Artefakte an den Release
+  contents: write   # zum Anhängen der Artefakte an den Release
 
 jobs:
   build:
@@ -28,18 +30,18 @@ jobs:
         include:
           - os: macos-14
             label: macOS-AppleSilicon
-            artifact: dist/IHKNachweise.dmg
           - os: windows-latest
             label: Windows11-Intel
-            artifact: dist/IHKNachweise/**
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Repository auschecken
+        uses: actions/checkout@v4
 
       - name: Python einrichten
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Abhängigkeiten installieren
         run: |
@@ -47,23 +49,38 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      # ---- macOS: .app + .dmg ------------------------------------------
       - name: Build (macOS)
         if: runner.os == 'macOS'
-        run: |
-          PYTHON=python PYINSTALLER=pyinstaller bash packaging/build_macos.sh
+        run: PYTHON=python PYINSTALLER=pyinstaller bash packaging/build_macos.sh
 
+      - name: Asset-Pfad festlegen (macOS)
+        if: runner.os == 'macOS'
+        run: echo "ASSET=dist/IHKNachweise.dmg" >> "$GITHUB_ENV"
+
+      # ---- Windows: onedir -> .zip -------------------------------------
       - name: Build (Windows)
         if: runner.os == 'Windows'
-        run: |
-          pyinstaller packaging/IHKNachweise.spec --noconfirm
+        run: pyinstaller packaging/IHKNachweise.spec --noconfirm
 
+      - name: ZIP packen (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/IHKNachweise/* -DestinationPath dist/IHKNachweise-Windows.zip -Force
+          "ASSET=dist/IHKNachweise-Windows.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # ---- Artefakt sichern + an Release anhängen ----------------------
       - name: Artefakt hochladen
         uses: actions/upload-artifact@v4
         with:
           name: IHKNachweise-${{ matrix.label }}
-          path: ${{ matrix.artifact }}
+          path: ${{ env.ASSET }}
+          if-no-files-found: error
 
       - name: An Release anhängen
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.artifact }}
+          files: ${{ env.ASSET }}
+          fail_on_unmatched_files: true
