@@ -120,46 +120,36 @@ Plattformen, sobald ein Tag \texttt{v*} gepusht wird.
 
 \section{Speicherorte / Pfade}
 
-In der gebündelten App liegen die Dateien in den nutzerspezifischen
-System-Ordnern (nicht neben dem Programm, da Programmordner i.\,d.\,R.
-schreibgesch\"utzt sind). Nur der Ausgabeordner ist frei einstellbar.
+Die Anwendung ist \textbf{portabel}: Alle Daten liegen in einem Ordner
+\texttt{Daten} \emph{neben} der Anwendung. Es werden \textbf{keine
+Administratorrechte} ben\"otigt und nichts in gesch\"utzte System- oder
+Programmordner geschrieben. Die App darf in einem beliebigen, beschreibbaren
+Ordner liegen (Home, Netzlaufwerk, USB-Stick) und wird manuell gestartet.
 
-\renewcommand{\arraystretch}{1.3}
-\begin{table}[h]
-\centering
-\footnotesize
-\textbf{macOS}\\[0.3em]
-\begin{tabular}{@{}p{4.3cm}p{10.5cm}@{}}
-\toprule
-\textbf{Inhalt} & \textbf{Pfad} \\
-\midrule
-Heruntergeladene LLM & \texttt{\tld/Library/Application Support/IHKNachweise/IHKNachweise/models/} \\
-Konfiguration        & \texttt{\tld/Library/Preferences/IHKNachweise/IHKNachweise/config.json} \\
-PDFs + Rohdaten (Standard) & \texttt{\tld/Documents/Ausbildungsnachweise/} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h]
-\centering
-\footnotesize
-\textbf{Windows 11}\\[0.3em]
-\begin{tabular}{@{}p{4.3cm}p{10.5cm}@{}}
-\toprule
-\textbf{Inhalt} & \textbf{Pfad} \\
-\midrule
-Heruntergeladene LLM & \texttt{C:\bs Users\bs <Name>\bs AppData\bs Roaming\bs IHKNachweise\bs IHKNachweise\bs models\bs} \\
-Konfiguration        & \texttt{C:\bs Users\bs <Name>\bs AppData\bs Local\bs IHKNachweise\bs IHKNachweise\bs config.json} \\
-PDFs + Rohdaten (Standard) & \texttt{C:\bs Users\bs <Name>\bs Documents\bs Ausbildungsnachweise\bs} \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{verbatim}
+<frei gewaehlter Ordner>/
+  IHKNachweise(.exe / .app)     # die Anwendung
+  Daten/
+    config.json                # Konfiguration
+    modelle/                   # heruntergeladene GGUF-Modelle
+    Nachweise/                 # erzeugte PDFs + Rohdaten (.txt)
+\end{verbatim}
 
 \noindent
-\textbf{Umleitbar:} Die Umgebungsvariablen \texttt{IHK\_MODELS\_DIR} und
-\texttt{IHK\_CONFIG\_DIR} verlegen Modell- bzw.\ Konfigurationsordner an einen
-beliebigen Ort -- n\"utzlich f\"ur eine portable Installation, bei der alles in
-einem Ordner liegt.
+Auf macOS wird bewusst \emph{neben} das \texttt{.app}-Bundle geschrieben (nicht
+hinein), um dessen Signatur nicht zu verletzen. Im Entwicklungsbetrieb
+(\texttt{python main.py}) entsteht \texttt{Daten/} in der Projektwurzel.
+
+\medskip
+\noindent
+\textbf{Umleitbar:} \texttt{IHK\_DATA\_DIR} verlegt den gesamten Datenordner an
+einen beliebigen Ort; \texttt{IHK\_MODELS\_DIR} und \texttt{IHK\_CONFIG\_DIR}
+verlegen gezielt nur Modell- bzw.\ Konfigurationsordner.
+
+\medskip
+\noindent
+\emph{Hinweis:} Beim Aktualisieren der App den Ordner \texttt{Daten} behalten --
+er enth\"alt Modell, Konfiguration und alle Nachweise.
 
 \section{Laufender Betrieb}
 

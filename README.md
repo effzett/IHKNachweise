@@ -33,11 +33,28 @@ Beim ersten Generieren wird das gewählte Modell heruntergeladen (~1–5 GB, je
 nach Auswahl). Der Download und die Generierung laufen im Hintergrund; die
 Oberfläche bleibt bedienbar.
 
-### Speicherorte
+### Speicherorte (portabel)
 
-- Konfiguration: plattformüblicher App-Konfigordner (`config.json`).
-- Modelle: App-Datenordner, Unterordner `models/`.
-- PDFs/Rohdaten: standardmäßig `Dokumente/Ausbildungsnachweise/` (konfigurierbar).
+Die App ist **portabel**: Alle Daten liegen in einem Ordner `Daten/` **neben der
+Anwendung** — keine Administratorrechte nötig, nichts wird in geschützte System-
+oder Programmordner geschrieben. Die App kann in jedem beschreibbaren Ordner
+liegen (Home, Netzlaufwerk, USB-Stick) und wird manuell gestartet.
+
+```
+<frei gewählter Ordner>/
+  IHKNachweise(.exe / .app)      # die Anwendung
+  Daten/
+    config.json                 # Konfiguration
+    modelle/                    # heruntergeladene GGUF-Modelle
+    Nachweise/                  # erzeugte PDFs + Rohdaten (.txt), konfigurierbar
+```
+
+Im Dev-Betrieb (`python main.py`) entsteht `Daten/` in der Projektwurzel.
+Override per Umgebungsvariable: `IHK_DATA_DIR` (kompletter Datenordner),
+`IHK_MODELS_DIR`, `IHK_CONFIG_DIR`.
+
+> Hinweis: Beim Aktualisieren der App den Ordner `Daten/` behalten — er enthält
+> Modell, Konfiguration und alle Nachweise.
 
 ## Distribution
 
