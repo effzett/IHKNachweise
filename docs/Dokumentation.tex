@@ -1,0 +1,190 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage[colorlinks=true,linkcolor=ihkblue,urlcolor=ihkblue]{hyperref}
+
+\definecolor{ihkblue}{HTML}{1F4E79}
+\newcommand{\bs}{\textbackslash}
+\newcommand{\tld}{\textasciitilde}
+
+\setlist{nosep,leftmargin=1.4em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\textcolor{ihkblue}{IHK-Ausbildungsnachweise}}
+\rhead{\small Dokumentation}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+  \includegraphics[width=2.2cm]{icon.png}\\[0.4em]
+  {\LARGE\bfseries\textcolor{ihkblue}{IHK-Ausbildungsnachweise}}\\[0.2em]
+  {\large Desktop-Anwendung -- Kurzdokumentation}\\[0.4em]
+  {\small Version 0.1.0 \quad\textbar\quad Stand: \today}
+\end{center}
+
+\vspace{0.6em}
+\hrule
+\vspace{1.0em}
+
+\noindent
+Die Anwendung unterst\"utzt Fachinformatiker-Azubis beim Führen ihrer
+w\"ochentlichen Ausbildungsnachweise. Stichworte werden links eingetragen, eine
+\emph{lokale} Sprachmodell-Engine strukturiert sie thematisch, und rechts
+erscheint das daraus erzeugte PDF.
+
+\section{Hintergrund \& Aufbau}
+
+Die App ist in Python mit \textbf{PySide6} (Qt~6) umgesetzt und in klar getrennte
+Module gegliedert:
+
+\begin{itemize}
+  \item \texttt{ihk\_nachweise/app.py} -- Anwendungseinstieg (Qt-Setup).
+  \item \texttt{ihk\_nachweise/main\_window.py} -- Orchestrierung von Eingabe,
+        LLM, PDF-Erzeugung und Anzeige.
+  \item \texttt{ihk\_nachweise/widgets/} -- Oberfl\"ache: Metadaten-Leiste (oben),
+        Eingabe-Panel (links), PDF-Anzeige via \texttt{QPdfView} (rechts).
+  \item \texttt{ihk\_nachweise/llm/} -- Modellkatalog, Download- und
+        Generierungs-Worker.
+  \item \texttt{ihk\_nachweise/pdf/} -- PDF-Erzeugung mit \textbf{reportlab}.
+  \item \texttt{ihk\_nachweise/storage/} -- Rohdaten als \texttt{.txt}
+        (verlustfrei wieder einlesbar).
+  \item \texttt{ihk\_nachweise/config.py}, \texttt{paths.py} -- Konfiguration
+        (JSON) und plattform\"ubliche Speicherorte.
+\end{itemize}
+
+\noindent
+Langlaufende Aufgaben (Modell-Download, Textgenerierung) laufen in eigenen
+Qt-Threads, damit die Oberfl\"ache bedienbar bleibt.
+
+\section{Lokale LLM}
+
+Die Sprachverarbeitung erfolgt \textbf{vollst\"andig lokal} -- es werden keine
+Daten an einen Online-Dienst gesendet.
+
+\begin{itemize}
+  \item \textbf{Engine:} \texttt{llama-cpp-python} (nutzt Metal auf macOS, CPU
+        unter Windows). Die nativen Bibliotheken sind im Paket enthalten.
+  \item \textbf{Modelle:} GGUF-Dateien von Hugging Face. Ausw\"ahlbar u.\,a.
+        \emph{Qwen2.5 3B} (Standard, ca.\ 1{,}9\,GB), \emph{Llama 3.2 3B},
+        \emph{Qwen2.5 7B} sowie \emph{Qwen2.5 1.5B}.
+  \item \textbf{Download bei Bedarf:} Das gew\"ahlte Modell wird beim ersten
+        Verwenden automatisch heruntergeladen (mit Fortschrittsanzeige) und
+        danach wiederverwendet. Es ist \emph{nicht} im Installationspaket
+        enthalten.
+  \item \textbf{Strukturierung:} Aus den Stichworten werden wenige thematische
+        Oberkategorien mit \"Uberschriften und Stichpunkten gebildet.
+  \item \textbf{Neu generieren:} Erzeugt das Ergebnis mit mehr Variation neu und
+        \"uberschreibt die vorige Fassung.
+\end{itemize}
+
+\section{Installation \& Distribution}
+
+\subsection*{Entwicklung (aus dem Quellcode)}
+\begin{verbatim}
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python main.py
+\end{verbatim}
+
+\subsection*{Eigenst\"andige Pakete}
+Mit \textbf{PyInstaller} werden gebündelte Pakete erzeugt, die alle Bibliotheken
+enthalten:
+
+\begin{verbatim}
+.venv/bin/pip install pyinstaller
+
+# macOS (Apple Silicon)  -> dist/IHKNachweise.dmg
+bash packaging/build_macos.sh
+
+# Windows 11             -> dist/IHKNachweise/IHKNachweise.exe
+packaging\build_windows.bat
+\end{verbatim}
+
+\noindent
+Das App-Icon (\texttt{packaging/icon.svg}) wird \"uber
+\texttt{packaging/make\_icons.py} in \texttt{.icns} (macOS) und \texttt{.ico}
+(Windows) umgewandelt und vom Build automatisch eingebunden. Ein
+GitHub-Actions-Workflow (\texttt{.github/workflows/release.yml}) baut beide
+Plattformen, sobald ein Tag \texttt{v*} gepusht wird.
+
+\section{Speicherorte / Pfade}
+
+In der gebündelten App liegen die Dateien in den nutzerspezifischen
+System-Ordnern (nicht neben dem Programm, da Programmordner i.\,d.\,R.
+schreibgesch\"utzt sind). Nur der Ausgabeordner ist frei einstellbar.
+
+\renewcommand{\arraystretch}{1.3}
+\begin{table}[h]
+\centering
+\footnotesize
+\textbf{macOS}\\[0.3em]
+\begin{tabular}{@{}p{4.3cm}p{10.5cm}@{}}
+\toprule
+\textbf{Inhalt} & \textbf{Pfad} \\
+\midrule
+Heruntergeladene LLM & \texttt{\tld/Library/Application Support/IHKNachweise/IHKNachweise/models/} \\
+Konfiguration        & \texttt{\tld/Library/Preferences/IHKNachweise/IHKNachweise/config.json} \\
+PDFs + Rohdaten (Standard) & \texttt{\tld/Documents/Ausbildungsnachweise/} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\textbf{Windows 11}\\[0.3em]
+\begin{tabular}{@{}p{4.3cm}p{10.5cm}@{}}
+\toprule
+\textbf{Inhalt} & \textbf{Pfad} \\
+\midrule
+Heruntergeladene LLM & \texttt{C:\bs Users\bs <Name>\bs AppData\bs Roaming\bs IHKNachweise\bs IHKNachweise\bs models\bs} \\
+Konfiguration        & \texttt{C:\bs Users\bs <Name>\bs AppData\bs Local\bs IHKNachweise\bs IHKNachweise\bs config.json} \\
+PDFs + Rohdaten (Standard) & \texttt{C:\bs Users\bs <Name>\bs Documents\bs Ausbildungsnachweise\bs} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+\textbf{Umleitbar:} Die Umgebungsvariablen \texttt{IHK\_MODELS\_DIR} und
+\texttt{IHK\_CONFIG\_DIR} verlegen Modell- bzw.\ Konfigurationsordner an einen
+beliebigen Ort -- n\"utzlich f\"ur eine portable Installation, bei der alles in
+einem Ordner liegt.
+
+\section{Laufender Betrieb}
+
+\begin{enumerate}
+  \item \textbf{Metadaten} oben setzen: Name, Kalenderwoche (mit
+        \"uberschreibbarem Datumsbereich -- wichtig bei
+        Arbeitsbereichswechsel innerhalb einer Woche), Arbeitsbereich,
+        Betreuer/in, Modell sowie Speicherort und Dateinamen-Muster.
+  \item \textbf{Stichworte} der Woche links eintragen.
+  \item \textbf{\glqq Erzeuge\grqq} klicken: Bei Bedarf wird das Modell geladen,
+        anschlie\ss end strukturiert die LLM die Eingaben und das PDF erscheint
+        rechts.
+  \item \textbf{Ergebnis pr\"ufen.} Ist es unbefriedigend, erzwingt
+        \glqq Neu generieren\grqq{} eine neue Fassung.
+  \item \textbf{Ausgabe:} Pro Nachweis entstehen eine \texttt{.pdf} und eine
+        gleichnamige \texttt{.txt} (Rohdaten). Die Fu\ss zeile des PDF nennt das
+        verwendete Modell sowie die Erzeugungsdaten.
+  \item \textbf{Sp\"ater fortsetzen:} \"Uber \glqq Rohdaten laden\grqq{} l\"asst
+        sich eine \texttt{.txt} wieder einlesen und ein neues PDF erzeugen.
+\end{enumerate}
+
+\noindent
+Die Metadaten (Name, Listen f\"ur Arbeitsbereiche/Betreuer, Pfade, Muster,
+zuletzt gew\"ahltes Modell) werden in der Konfigurationsdatei gespeichert und
+beim n\"achsten Start wiederhergestellt; sie lassen sich \"uber das
+\glqq Datei\grqq-Men\"u zur\"ucksetzen.
+
+\end{document}

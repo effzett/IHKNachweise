@@ -21,3 +21,12 @@ dist/
 
 # Lokal heruntergeladene Modelle (portable Installation / Tests)
 /models/
+
+# LaTeX-Hilfsdateien (PDF/TeX/PNG werden eingecheckt)
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.fls
+docs/*.fdb_latexmk
+docs/*.synctex.gz
