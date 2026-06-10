@@ -67,6 +67,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          Copy-Item packaging/LIESMICH.txt dist/IHKNachweise/ -Force
           Compress-Archive -Path dist/IHKNachweise/* -DestinationPath dist/IHKNachweise-Windows.zip -Force
           "ASSET=dist/IHKNachweise-Windows.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 

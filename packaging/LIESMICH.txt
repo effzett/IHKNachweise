@@ -1,0 +1,39 @@
+========================================================================
+  SVLFG - IHK-Ausbildungsnachweise
+  Portable Anwendung - Kurzanleitung
+========================================================================
+
+WAS IST DAS?
+  Ein Programm zum Fuehren der woechentlichen Ausbildungsnachweise.
+  Links Stichworte eintragen, eine lokale KI strukturiert sie, rechts
+  entsteht ein fertiges PDF.
+
+STARTEN  (keine Installation, keine Admin-Rechte noetig)
+  - Windows: Diesen Ordner an einen beschreibbaren Ort kopieren
+             (z. B. Eigene Dateien, Desktop, USB-Stick) und
+             IHKNachweise.exe doppelklicken.
+  - macOS:   IHKNachweise.app an einen beschreibbaren Ort legen und
+             starten.
+  Das Programm wird jedes Mal manuell gestartet.
+
+WO LIEGEN MEINE DATEN?
+  Direkt neben dem Programm im Ordner "Daten":
+      Daten/config.json   ->  Einstellungen
+      Daten/modelle/      ->  heruntergeladenes KI-Modell
+      Daten/Nachweise/    ->  deine PDFs und Rohdaten (.txt)
+
+ERSTER START
+  Beim ersten Klick auf "Erzeuge" wird einmalig das KI-Modell aus dem
+  Internet geladen (ca. 1-5 GB, je nach Auswahl). Das dauert einige
+  Minuten; danach laeuft alles offline.
+
+WICHTIG BEIM AKTUALISIEREN
+  Beim Austausch gegen eine neue Version den Ordner "Daten" BEHALTEN
+  bzw. mit uebernehmen - er enthaelt dein Modell, deine Einstellungen
+  und alle Nachweise.
+
+PROBLEME?
+  Liegt der Programmordner an einem schreibgeschuetzten Ort, kann das
+  Modell nicht gespeichert werden. Dann den Ordner an einen Ort mit
+  Schreibrechten verschieben (z. B. Eigene Dateien).
+========================================================================

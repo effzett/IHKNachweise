@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QFileDialog,
@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from . import APP_DISPLAY_NAME
+from . import APP_DISPLAY_NAME, paths
 from .config import ConfigManager
 from .llm import catalog, generator
 from .llm.downloader import DownloadWorker
@@ -62,6 +62,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(APP_DISPLAY_NAME)
         self.resize(1280, 800)
 
+        # Erststart erkennen, bevor die Config geladen/angelegt wird.
+        self._first_run = not paths.config_file().exists()
+
         self.config_manager = ConfigManager()
         self.config = self.config_manager.load()
 
@@ -74,6 +77,10 @@ class MainWindow(QMainWindow):
         self._build_menu()
         self.metadata_bar.load_from_config(self.config)
         self._update_model_status()
+
+        if self._first_run:
+            # Nach dem Start der Event-Loop anzeigen, nicht im Konstruktor.
+            QTimer.singleShot(0, self._show_first_run_hint)
 
     # ---- Aufbau ----------------------------------------------------------
     def _build_ui(self) -> None:
@@ -122,6 +129,25 @@ class MainWindow(QMainWindow):
         act_quit = QAction("&Beenden", self)
         act_quit.triggered.connect(self.close)
         menu.addAction(act_quit)
+
+    # ---- Erststart-Hinweis -----------------------------------------------
+    def _show_first_run_hint(self) -> None:
+        data = paths.data_root()
+        QMessageBox.information(
+            self,
+            "Willkommen",
+            "Diese Anwendung ist portabel – es ist keine Installation und keine "
+            "Administratorberechtigung nötig.\n\n"
+            f"Alle Daten werden hier gespeichert:\n{data}\n\n"
+            "• Einstellungen, das KI-Modell und deine Nachweise liegen im Ordner "
+            "»Daten« direkt neben dem Programm.\n"
+            "• Beim ersten »Erzeuge« wird einmalig das KI-Modell aus dem Internet "
+            "geladen (kann einige Minuten dauern); danach läuft alles offline.\n"
+            "• Beim Aktualisieren auf eine neue Version den Ordner »Daten« "
+            "behalten – er enthält Modell, Einstellungen und alle Nachweise.\n\n"
+            "Liegt das Programm an einem schreibgeschützten Ort, bitte den Ordner "
+            "an einen Ort mit Schreibrechten verschieben (z. B. Eigene Dateien).",
+        )
 
     # ---- Einstellungen (Config CRUD) -------------------------------------
     def _save_settings(self) -> None:

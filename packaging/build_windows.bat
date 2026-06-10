@@ -17,6 +17,9 @@ if errorlevel 1 (
   exit /b 1
 )
 
+REM LIESMICH.txt neben die exe legen
+copy /Y packaging\LIESMICH.txt dist\%APP_NAME%\ >nul
+
 echo ==^> Fertig. Ergebnis unter dist\%APP_NAME%\%APP_NAME%.exe
 echo     (Optional: mit Inno Setup / NSIS zu einem Installer .exe verpacken.)
 endlocal

@@ -23,10 +23,17 @@ fi
 
 echo "==> Erzeuge DMG …"
 rm -f "${DIST_DIR}/${DMG_NAME}"
+# Staging-Ordner: App + LIESMICH.txt landen gemeinsam im DMG.
+STAGE="${DIST_DIR}/dmg_stage"
+rm -rf "${STAGE}"
+mkdir -p "${STAGE}"
+cp -R "${APP_PATH}" "${STAGE}/"
+cp packaging/LIESMICH.txt "${STAGE}/" 2>/dev/null || true
 hdiutil create \
   -volname "${APP_NAME}" \
-  -srcfolder "${APP_PATH}" \
+  -srcfolder "${STAGE}" \
   -ov -format UDZO \
   "${DIST_DIR}/${DMG_NAME}"
+rm -rf "${STAGE}"
 
 echo "==> Fertig: ${DIST_DIR}/${DMG_NAME}"
