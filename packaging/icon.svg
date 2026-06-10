@@ -1,0 +1,51 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a8de0"/>
+      <stop offset="1" stop-color="#1f4e79"/>
+    </linearGradient>
+    <linearGradient id="sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eef3f8"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="28" flood-color="#06203a" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Hintergrund: abgerundetes Quadrat (Squircle) in IHK-Akzentblau -->
+  <rect x="0" y="0" width="1024" height="1024" rx="232" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1024" height="512" rx="232" fill="#ffffff" opacity="0.06"/>
+
+  <!-- Nachweis-Blatt mit umgeknickter Ecke oben rechts -->
+  <g filter="url(#shadow)">
+    <path d="M296 190
+             H612
+             L758 336
+             V808
+             a30 30 0 0 1 -30 30
+             H296
+             a30 30 0 0 1 -30 -30
+             V220
+             a30 30 0 0 1 30 -30 Z" fill="url(#sheet)"/>
+    <path d="M612 190 L758 336 H642 a30 30 0 0 1 -30 -30 Z" fill="#cdd9e6"/>
+  </g>
+
+  <!-- Titelzeile (Akzent) -->
+  <rect x="332" y="300" width="284" height="44" rx="22" fill="#1f4e79"/>
+
+  <!-- Textzeilen -->
+  <g fill="#c2d0de">
+    <rect x="332" y="392" width="372" height="26" rx="13"/>
+    <rect x="332" y="450" width="372" height="26" rx="13"/>
+    <rect x="332" y="508" width="288" height="26" rx="13"/>
+    <rect x="332" y="566" width="344" height="26" rx="13"/>
+  </g>
+
+  <!-- "Erledigt"-Häkchen als Stempel unten rechts -->
+  <g filter="url(#shadow)">
+    <circle cx="706" cy="724" r="122" fill="#2e9e5b" stroke="#ffffff" stroke-width="16"/>
+  </g>
+  <path d="M648 726 l40 42 l82 -92" fill="none" stroke="#ffffff"
+        stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -56,6 +56,21 @@ packaging\build_windows.bat
 Die GitHub-Action `.github/workflows/release.yml` baut beide Plattformen, sobald
 auf `master` ein Tag `v*` gepusht wird (derzeit als Gerüst angelegt).
 
+### App-Icon
+
+Das Icon ist als `packaging/icon.svg` hinterlegt. Aus ihm werden die
+plattformspezifischen Dateien erzeugt (gerendert mit PySide6/QtSvg, keine
+Zusatzabhängigkeit):
+
+```bash
+.venv/bin/python packaging/make_icons.py
+# -> packaging/IHKNachweise.icns (macOS)
+# -> packaging/IHKNachweise.ico  (Windows)
+```
+
+Die erzeugten Icons sind eingecheckt; der PyInstaller-Build bindet sie automatisch
+ein. Nach einer Änderung an `icon.svg` das Skript erneut ausführen.
+
 ## Projektstruktur
 
 ```

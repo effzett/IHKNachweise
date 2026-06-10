@@ -46,6 +46,14 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
+# Plattform-Icons (siehe packaging/make_icons.py). Fehlt eine Datei, baut
+# PyInstaller ohne Icon weiter, statt abzubrechen.
+ICON_ICNS = os.path.join(SPECPATH, "IHKNachweise.icns")
+ICON_ICO = os.path.join(SPECPATH, "IHKNachweise.ico")
+_exe_icon = ICON_ICO if sys.platform.startswith("win") else ICON_ICNS
+EXE_ICON = _exe_icon if os.path.exists(_exe_icon) else None
+BUNDLE_ICON = ICON_ICNS if os.path.exists(ICON_ICNS) else None
+
 exe = EXE(
     pyz,
     a.scripts,
@@ -61,6 +69,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=EXE_ICON,
 )
 
 coll = COLLECT(
@@ -79,7 +88,7 @@ if sys.platform == "darwin":
     app = BUNDLE(
         coll,
         name="IHKNachweise.app",
-        icon=None,
+        icon=BUNDLE_ICON,
         bundle_identifier="de.ihk.nachweise",
         info_plist={
             "CFBundleDisplayName": "IHK-Ausbildungsnachweise",
