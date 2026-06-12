@@ -62,8 +62,11 @@ CATALOG: List[ModelInfo] = [
     ModelInfo(
         id="qwen2.5-7b-instruct-q4",
         label="Qwen2.5 7B Instruct (größer, präziser)",
-        repo_id="Qwen/Qwen2.5-7B-Instruct-GGUF",
-        filename="qwen2.5-7b-instruct-q4_k_m.gguf",
+        # bartowski liefert eine einzelne GGUF-Datei; das offizielle
+        # Qwen-Repo splittet Q4_K_M in mehrere Teile, was der Single-File-
+        # Downloader nicht laden kann.
+        repo_id="bartowski/Qwen2.5-7B-Instruct-GGUF",
+        filename="Qwen2.5-7B-Instruct-Q4_K_M.gguf",
         size_mb=4680,
     ),
     ModelInfo(
